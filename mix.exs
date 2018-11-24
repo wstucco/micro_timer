@@ -23,7 +23,8 @@ defmodule MicroTimer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:stream_data, "~> 0.4.2", only: :test, runtime: false}
     ]
   end
 
