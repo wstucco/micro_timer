@@ -1,18 +1,28 @@
 defmodule MicroTimer do
   @moduledoc """
-  Documentation for MicroTimer.
+  A timer module with microsecond resolution.
   """
 
   @doc """
-  Hello world.
+  Suspend the current process for the given `timeout` and then returns `:ok`.
+
+  `timeout` is the number of microsends to sleep as an integer.
 
   ## Examples
 
-      iex> MicroTimer.hello()
-      :world
+      iex> MicroTimer.usleep(250)
+      :ok
 
   """
-  def hello do
-    :world
+
+  defdelegate µsleep(timeout), to: __MODULE__, as: :usleep
+
+  @spec usleep(non_neg_integer()) :: :ok
+  def usleep(timeout) when is_integer(timeout) and timeout > 0 do
+    :ok
+  end
+
+  def usleep(timeout) when is_integer(timeout) do
+    :ok
   end
 end
