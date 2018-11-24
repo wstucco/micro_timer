@@ -35,11 +35,13 @@ defmodule MicroTimer do
 
   defp do_usleep(timeout) when timeout > 2_000 do
     ms_timeout = div(timeout, 1_000) - 1
-    us_timeout = timeout - (ms_timeout * 1_000)
 
-    Process.sleep(ms_timeout)
+    {real_sleep_time, _} =
+      :timer.tc(fn ->
+        Process.sleep(ms_timeout)
+      end)
 
-    do_usleep(System.monotonic_time(:microsecond), us_timeout)
+    do_usleep(System.monotonic_time(:microsecond), timeout - real_sleep_time)
   end
 
   defp do_usleep(timeout) do
