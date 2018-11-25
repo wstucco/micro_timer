@@ -111,6 +111,60 @@ defmodule MicroTimer do
   end
 
   @doc """
+  Send `message` to `pid` after `timeout` microseconds.
+
+  If `pid` is left empty, the `message` is sent to `self()`.
+
+  Returns the `pid` of the timer.
+
+  See also `cancel_timer/1`.
+
+  ## Examples
+
+      MicroTimer.send_after(250, :msg)
+
+      MicroTimer.send_after(250, "msg", self())
+
+      iex> pid = MicroTimer.send_after(250, :msg)
+      iex> is_pid(pid)
+      true
+
+  """
+  @spec send_after(non_neg_integer(), any, pid()) :: pid()
+  def send_after(timeout, message, pid \\ self()) do
+    spawn(fn ->
+      do_apply_after(timeout, fn -> send(pid, message) end, [])
+    end)
+  end
+
+  @doc """
+  Send `message` to `pid` every `timeout` microseconds.
+
+  If `pid` is left empty, the `message` is sent to `self()`.
+
+  Returns the `pid` of the timer.
+
+  See also `cancel_timer/1`.
+
+  ## Examples
+
+      MicroTimer.send_every(250, :msg)
+
+      MicroTimer.send_every(250, "msg", self())
+
+      iex> pid = MicroTimer.send_every(250, :msg)
+      iex> is_pid(pid)
+      true
+
+  """
+  @spec send_every(non_neg_integer(), any, pid()) :: pid()
+  def send_every(timeout, message, pid \\ self()) do
+    spawn(fn ->
+      do_apply_every(timeout, fn -> send(pid, message) end, [])
+    end)
+  end
+
+  @doc """
   Cancel a timer `pid` created by `apply_after/2`, `apply_after/3`, `apply_every/2`
   or `apply_every/3`
 

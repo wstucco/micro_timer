@@ -107,6 +107,50 @@ defmodule MicroTimerTest do
     refute Process.alive?(pid)
   end
 
+  test "send_after/2" do
+    assert MicroTimer.send_after(1, :msg) |> is_pid()
+  end
+
+  test "send_after/3" do
+    assert MicroTimer.send_after(1, :msg, self()) |> is_pid()
+  end
+
+  test "send_after/3 sends a message to `pid` after `timeout` microseconds" do
+    MicroTimer.send_after(250, :msg, self())
+    assert_received_after(250, :msg)
+  end
+
+  test "send_after/3 returns a `pid` that can be cancelled" do
+    pid = MicroTimer.send_after(2_000, :msg, self())
+    MicroTimer.cancel_timer(pid)
+    refute_receive :msg, 2
+    refute Process.alive?(pid)
+  end
+
+  test "send_every/2" do
+    assert MicroTimer.send_every(1, :msg) |> is_pid()
+  end
+
+  test "send_every/3" do
+    assert MicroTimer.send_every(1, :msg, self()) |> is_pid()
+  end
+
+  test "send_every/3 sends a message to `pid` every `timeout` microseconds" do
+    pid = MicroTimer.send_every(2_000, :msg, self())
+
+    assert_received_every(250, :msg)
+
+    MicroTimer.cancel_timer(pid)
+    refute Process.alive?(pid)
+  end
+
+  test "send_every/3 returns a `pid` that can be cancelled" do
+    pid = MicroTimer.send_every(2_000, :msg, self())
+    MicroTimer.cancel_timer(pid)
+    refute_receive :msg, 2
+    refute Process.alive?(pid)
+  end
+
   test "cancel_timer/1" do
     pid = MicroTimer.apply_every(250, fn -> nil end)
     assert MicroTimer.cancel_timer(pid) == true
