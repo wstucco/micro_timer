@@ -1,22 +1,8 @@
 defmodule MicroTimerTest do
   use ExUnit.Case
   use ExUnitProperties
+  use TestMacros
   doctest MicroTimer
-
-  defmacro assert_received_after(timeout, msg) do
-    quote do
-      start = System.monotonic_time(:microsecond)
-
-      receive do
-        message ->
-          assert message == unquote(msg)
-          assert System.monotonic_time(:microsecond) - start >= unquote(timeout)
-      after
-        1_000 ->
-          throw(:timeout)
-      end
-    end
-  end
 
   test "usleep/1" do
     assert MicroTimer.usleep(1) == :ok
@@ -54,7 +40,7 @@ defmodule MicroTimerTest do
     refute Process.alive?(pid)
   end
 
-  test "apply_after/3 invoke a function after `timeout` microseconds" do
+  test "apply_after/3 invoke a function with args after `timeout` microseconds" do
     pid = MicroTimer.apply_after(250, fn msg, parent -> send(parent, msg) end, [:msg, self()])
     assert_received_after(250, :msg)
     refute Process.alive?(pid)
@@ -73,7 +59,7 @@ defmodule MicroTimerTest do
     refute Process.alive?(pid)
   end
 
-  test "apply_after/3 invoke Module.function after `timeout` microseconds" do
+  test "apply_after/3 invoke Module.function with args after `timeout` microseconds" do
     defmodule B do
       def f(msg, parent), do: send(parent, msg)
     end
@@ -81,5 +67,34 @@ defmodule MicroTimerTest do
     pid = MicroTimer.apply_after(250, {B, :f}, [:msg, self()])
     assert_received_after(250, :msg)
     refute Process.alive?(pid)
+  end
+
+  test "apply_every/2" do
+    assert MicroTimer.apply_every(1, fn -> nil end) |> is_pid()
+  end
+
+  test "apply_every/3" do
+    assert MicroTimer.apply_every(1, fn -> nil end, []) |> is_pid()
+  end
+
+  test "apply_every/2 invoke a function every `timeout` microseconds" do
+    parent = self()
+    _pid = MicroTimer.apply_every(250, fn -> send(parent, :msg) end)
+
+    assert_received_every(250, :msg)
+  end
+
+  test "apply_every/3 invoke a function with args after `timeout` microseconds" do
+    _pid = MicroTimer.apply_every(250, fn msg, parent -> send(parent, msg) end, [:msg, self()])
+    assert_received_every(250, :msg)
+  end
+
+  test "apply_every/3 invoke Module.function with args after `timeout` microseconds" do
+    defmodule C do
+      def f(msg, parent), do: send(parent, msg)
+    end
+
+    _pid = MicroTimer.apply_every(250, {C, :f}, [:msg, self()])
+    assert_received_every(250, :msg)
   end
 end

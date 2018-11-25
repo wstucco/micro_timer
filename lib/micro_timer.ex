@@ -70,6 +70,42 @@ defmodule MicroTimer do
     end)
   end
 
+  @doc """
+  Invokes the given `executable` repeatedly every `timeout` microseconds with the list of
+  arguments `args`.
+
+  `executable` can either be the tuple `{Module, :function}`, an anonymous function
+  or a function capture.
+
+  Returns the `pid` of the timer.
+
+  ## Examples
+
+      MicroTimer.apply_every(250, {Module. :function}, [])
+
+      MicroTimer.apply_every(250, fn a -> a + 1 end, [1])
+
+    iex> pid = MicroTimer.apply_every(250, fn arg -> arg end, [1])
+    iex> is_pid(pid)
+    true
+
+  """
+  @spec apply_every(non_neg_integer(), executable, [any]) :: pid()
+  def apply_every(timeout, executable, args \\ [])
+
+  def apply_every(timeout, {module, function}, args)
+      when is_atom(module) and is_atom(function) do
+    spawn(fn ->
+      do_apply_every(timeout, {module, function}, args)
+    end)
+  end
+
+  def apply_every(timeout, function, args) when is_function(function) do
+    spawn(fn ->
+      do_apply_every(timeout, function, args)
+    end)
+  end
+
   defp do_usleep(timeout) when timeout > 2_000 do
     ms_timeout = div(timeout, 1_000) - 1
 
@@ -101,5 +137,10 @@ defmodule MicroTimer do
   defp do_apply_after(timeout, function, args) do
     usleep(timeout)
     apply(function, args)
+  end
+
+  defp do_apply_every(timeout, executable, args) do
+    do_apply_after(timeout, executable, args)
+    do_apply_every(timeout, executable, args)
   end
 end
