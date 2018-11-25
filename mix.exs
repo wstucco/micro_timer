@@ -10,7 +10,7 @@ defmodule MicroTimer.MixProject do
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps(),
-      source_url: "https://gitlab.com/wstucco/micro_timer"
+      docs: docs()
     ]
   end
 
@@ -38,6 +38,18 @@ defmodule MicroTimer.MixProject do
         "GitLab" => "https://gitlab.com/wstucco/micro_timer",
         "GitHub" => "https://github.com/wstucco/micro_timer"
       }
+    ]
+  end
+
+  defp docs() do
+    [
+      main: "readme",
+      name: "MicroTimer",
+      canonical: "http://hexdocs.pm/micro_timer",
+      source_url: "https://gotlab.com/wstucco/micro_timer",
+      extras: [
+        "README.md"
+      ]
     ]
   end
 end
