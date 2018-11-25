@@ -46,19 +46,6 @@ defmodule MicroTimerTest do
     refute Process.alive?(pid)
   end
 
-  test "apply_after/2 invoke Module.function after `timeout` microseconds" do
-    parent = self()
-
-    defmodule A do
-      @parent parent
-      def f, do: send(@parent, :msg)
-    end
-
-    pid = MicroTimer.apply_after(250, {A, :f})
-    assert_received_after(250, :msg)
-    refute Process.alive?(pid)
-  end
-
   test "apply_after/3 invoke Module.function with args after `timeout` microseconds" do
     defmodule B do
       def f(msg, parent), do: send(parent, msg)
