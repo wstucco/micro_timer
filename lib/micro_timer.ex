@@ -42,15 +42,17 @@ defmodule MicroTimer do
 
   Returns the `pid` of the timer.
 
+  See also `cancel_timer/1`.
+
   ## Examples
 
       MicroTimer.apply_after(250, {Module. :function}, [])
 
       MicroTimer.apply_after(250, fn a -> a + 1 end, [1])
 
-    iex> pid = MicroTimer.apply_after(250, fn arg -> arg end, [1])
-    iex> is_pid(pid)
-    true
+      iex> pid = MicroTimer.apply_after(250, fn arg -> arg end, [1])
+      iex> is_pid(pid)
+      true
 
   """
 
@@ -79,15 +81,17 @@ defmodule MicroTimer do
 
   Returns the `pid` of the timer.
 
+  See also `cancel_timer/1`.
+
   ## Examples
 
       MicroTimer.apply_every(250, {Module. :function}, [])
 
       MicroTimer.apply_every(250, fn a -> a + 1 end, [1])
 
-    iex> pid = MicroTimer.apply_every(250, fn arg -> arg end, [1])
-    iex> is_pid(pid)
-    true
+      iex> pid = MicroTimer.apply_every(250, fn arg -> arg end, [1])
+      iex> is_pid(pid)
+      true
 
   """
   @spec apply_every(non_neg_integer(), executable, [any]) :: pid()
@@ -104,6 +108,28 @@ defmodule MicroTimer do
     spawn(fn ->
       do_apply_every(timeout, function, args)
     end)
+  end
+
+  @doc """
+  Cancel a timer `pid` created by `apply_after/2`, `apply_after/3`, `apply_every/2`
+  or `apply_every/3`
+
+  Always returns `true`
+
+  ## Examples
+
+      timer = MicroTimer.apply_every(250, {Module. :function}, [])
+      MicroTimer.cancel_timer(timer)
+
+      iex> pid = MicroTimer.apply_every(250, fn arg -> arg end, [1])
+      iex> MicroTimer.cancel_timer(pid)
+      iex> Process.alive?(pid)
+      false
+
+  """
+  @spec cancel_timer(pid()) :: true
+  def cancel_timer(pid) when is_pid(pid) do
+    Process.exit(pid, :kill)
   end
 
   defp do_usleep(timeout) when timeout > 2_000 do

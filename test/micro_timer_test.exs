@@ -79,14 +79,20 @@ defmodule MicroTimerTest do
 
   test "apply_every/2 invoke a function every `timeout` microseconds" do
     parent = self()
-    _pid = MicroTimer.apply_every(250, fn -> send(parent, :msg) end)
+    pid = MicroTimer.apply_every(250, fn -> send(parent, :msg) end)
 
     assert_received_every(250, :msg)
+    MicroTimer.cancel_timer(pid)
+    refute Process.alive?(pid)
   end
 
   test "apply_every/3 invoke a function with args after `timeout` microseconds" do
-    _pid = MicroTimer.apply_every(250, fn msg, parent -> send(parent, msg) end, [:msg, self()])
+    pid = MicroTimer.apply_every(250, fn msg, parent -> send(parent, msg) end, [:msg, self()])
+
     assert_received_every(250, :msg)
+
+    MicroTimer.cancel_timer(pid)
+    refute Process.alive?(pid)
   end
 
   test "apply_every/3 invoke Module.function with args after `timeout` microseconds" do
@@ -94,7 +100,22 @@ defmodule MicroTimerTest do
       def f(msg, parent), do: send(parent, msg)
     end
 
-    _pid = MicroTimer.apply_every(250, {C, :f}, [:msg, self()])
+    pid = MicroTimer.apply_every(250, {C, :f}, [:msg, self()])
     assert_received_every(250, :msg)
+
+    MicroTimer.cancel_timer(pid)
+    refute Process.alive?(pid)
+  end
+
+  test "cancel_timer/1" do
+    pid = MicroTimer.apply_every(250, fn -> nil end)
+    assert MicroTimer.cancel_timer(pid) == true
+  end
+
+  test "cancel_timer/1 kills the timer identified by `pid`" do
+    pid = MicroTimer.apply_every(250, fn parent -> send(parent, :msg) end, [self()])
+    assert MicroTimer.cancel_timer(pid) == true
+    refute Process.alive?(pid)
+    refute_receive :msg, 1
   end
 end
