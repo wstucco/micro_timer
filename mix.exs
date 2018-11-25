@@ -32,7 +32,11 @@ defmodule MicroTimer.MixProject do
     [
       files: ~w(lib mix.exs README.md LICENSE),
       maintainers: ["Massimo Ronca"],
-      licenses: ["MIT"]
+      licenses: ["MIT"],
+      links: %{
+        "GitLab" => "https://gitlab.com/wstucco/micro_timer",
+        "GitHub" => "https://github.com/wstucco/micro_timer"
+      }
     ]
   end
 end
