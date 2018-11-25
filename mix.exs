@@ -9,7 +9,8 @@ defmodule MicroTimer.MixProject do
       description: "A timer module with microsend resolution",
       start_permanent: Mix.env() == :prod,
       package: package(),
-      deps: deps()
+      deps: deps(),
+      source_url: "https://gitlab.com/wstucco/micro_timer"
     ]
   end
 
