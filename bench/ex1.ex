@@ -31,10 +31,17 @@ defmodule MicroTimerBenchAdjust do
   end
 
   def run(file) do
-    File.read!(Path.expand(file))
-    |> String.split("\n", trim: true)
-    |> Enum.map(&String.to_integer/1)
-    |> Enum.each(fn timeout ->
+    IO.write(:stderr, "Ex1 started processing data...\n")
+
+    File.stream!(Path.expand(file))
+    |> Stream.map(&String.trim/1)
+    |> Stream.map(&String.to_integer/1)
+    |> Stream.with_index()
+    |> Stream.each(fn {timeout, index} ->
+      if index > 0 and rem(index, 100) == 0 do
+        IO.write(:stderr, "\rEx1 processed #{index} lines...")
+      end
+
       {time, _} =
         :timer.tc(fn ->
           usleep(timeout)
@@ -43,5 +50,8 @@ defmodule MicroTimerBenchAdjust do
       r = :io_lib.format("~f", [(time - timeout) / timeout])
       IO.puts("#{time};#{time - timeout};#{r}")
     end)
+    |> Stream.run()
+
+    IO.write(:stderr, "\nEx1 done processing!\n")
   end
 end
