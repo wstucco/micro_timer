@@ -67,7 +67,11 @@ iex(3)> flush
 :ok
 ```
 
-Check out the [`examples`](examples/) in this repository for some more realistic example.
+Check out the [`examples`](examples/) folder in this repository for more realistic examples.
 
 Full documentation can be found at [https://hexdocs.pm/micro_timer](https://hexdocs.pm/micro_timer).
+
+## License
+
+**MicroTimer** is released under the MIT License - see the [LICENSE](LICENSE) file.
 
