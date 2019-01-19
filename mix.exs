@@ -4,7 +4,7 @@ defmodule MicroTimer.MixProject do
   def project do
     [
       app: :micro_timer,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.7",
       description: "A timer module with microsecond resolution",
       start_permanent: Mix.env() == :prod,
