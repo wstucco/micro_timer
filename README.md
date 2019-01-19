@@ -71,6 +71,10 @@ Check out the [`examples`](examples/) folder in this repository for more realist
 
 Full documentation can be found at [https://hexdocs.pm/micro_timer](https://hexdocs.pm/micro_timer).
 
+## Benchmarks
+
+[Google Drive spreadsheet](https://docs.google.com/spreadsheets/u/2/d/e/2PACX-1vTmvR8JOpVriDxXGv3UJpsxEMN4hIa56NYrCgRCc_V3OPxkixaNat6lgzUOr1lr2ftTih972TlsWdM9/pubhtml) 
+
 ## License
 
 **MicroTimer** is released under the MIT License - see the [LICENSE](LICENSE) file.
