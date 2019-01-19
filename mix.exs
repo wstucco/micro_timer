@@ -6,7 +6,7 @@ defmodule MicroTimer.MixProject do
       app: :micro_timer,
       version: "0.1.0",
       elixir: "~> 1.7",
-      description: "A timer module with microsend resolution",
+      description: "A timer module with microsecond resolution",
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps(),
